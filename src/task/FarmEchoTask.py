@@ -2,6 +2,7 @@ import re
 
 from ok.logging.Logger import get_logger
 from src.task.BaseCombatTask import BaseCombatTask, NotInCombatException
+from threading import Thread
 
 logger = get_logger(__name__)
 
@@ -124,7 +125,7 @@ class FarmEchoTask(BaseCombatTask):
         box = self.box_of_screen(0.25, 0.20, 0.75, 0.53)
         highest_percent = 0.0
         highest_index = 0
-        for i in range(4):
+        for i in range(8):
             self.middle_click_relative(0.5, 0.5)
             color_percent = self.calculate_color_percentage(echo_color, box)
             if color_percent > highest_percent:
@@ -136,14 +137,16 @@ class FarmEchoTask(BaseCombatTask):
             logger.debug(f'searching for echo {i} {float(color_percent):.3f} {float(highest_percent):.3}')
             # self.click_relative(0.25, 0.25)
             self.sleep(1)
-            self.send_key('a', down_time=0.05)
+            Thread(target=lambda: self.send_key('a', down_time=0.05)).start()
+            Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
             self.sleep(1)
 
         if highest_percent > 0.05:
             for i in range(highest_index):
                 self.middle_click_relative(0.5, 0.5)
                 self.sleep(1)
-                self.send_key('a', down_time=0.05)
+                Thread(target=lambda: self.send_key('a', down_time=0.05)).start()
+                Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
                 self.sleep(1)
         if self.debug:
             self.screenshot(f'pick_echo_{highest_index}')
