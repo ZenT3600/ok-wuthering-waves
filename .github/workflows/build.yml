@@ -16,16 +16,6 @@ jobs:
         with:
           fetch-depth: 0  # Important: fetch all history for all tags and branches
 
-      - name: Get Changes between Tags
-        id: changes
-        uses: simbo/changes-between-tags-action@v1
-        with:
-          validate-tag: false
-
-      - name: Get tag name
-        id: tagName
-        uses: olegtarasov/get-tag@v2.1.3
-
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
