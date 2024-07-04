@@ -16,13 +16,16 @@ class FarmEchoTask(BaseCombatTask):
         self.default_config.update({
             'Level': 1,
             'Repeat Farm Count': 100,
-            'Entrance Direction': 'Forward'
+            'Entrance Direction': 'Forward',
+            'Echo Locating Method': 'New'
         })
         self.config_description = {
             'Level': '(1-6) Important, Choose which level to farm, lower levels might not produce a echo',
-            'Entrance Direction': 'Choose Forward for Dreamless, Backward for Jue'
+            'Entrance Direction': 'Choose Forward for Dreamless, Backward for Jue',
+            'Echo Locating Method': 'New is slower but thorough, Stable is... stable'
         }
         self.config_type["Entrance Direction"] = {'type': "drop_down", 'options': ['Forward', 'Backward']}
+        self.config_type["Echo Locating Method"] = {'type': "drop_down", 'options': ['New', 'Stable']}
         self.crownless_pos = (0.9, 0.4)
         self.last_drop = False
 
@@ -125,10 +128,12 @@ class FarmEchoTask(BaseCombatTask):
         box = self.box_of_screen(0.25, 0.20, 0.75, 0.53)
         highest_percent = 0.0
         highest_index = 0
-        for i in range(8):
+        for i in range(8 if self.config.get("Echo Locating Method") == "New" else 4):
             self.middle_click_relative(0.5, 0.5)
             color_percent = self.calculate_color_percentage(echo_color, box)
+            self.info['Facing Index'] = f"{i}"
             if color_percent > highest_percent:
+                self.info['Highest Confidence'] = f"{color_percent}%, index {i}"
                 highest_percent = color_percent
                 highest_index = i
             self.screenshot(f'find_echo_{highest_index}_{float(color_percent):.3f}_{float(highest_percent):.3}')
@@ -138,7 +143,8 @@ class FarmEchoTask(BaseCombatTask):
             # self.click_relative(0.25, 0.25)
             self.sleep(1)
             Thread(target=lambda: self.send_key('a', down_time=0.05)).start()
-            Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
+            if self.config.get("Echo Locating Method") == "New":
+                Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
             self.sleep(1)
 
         if highest_percent > 0.05:
@@ -146,7 +152,8 @@ class FarmEchoTask(BaseCombatTask):
                 self.middle_click_relative(0.5, 0.5)
                 self.sleep(1)
                 Thread(target=lambda: self.send_key('a', down_time=0.05)).start()
-                Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
+                if self.config.get("Echo Locating Method") == "New":
+                    Thread(target=lambda: self.send_key('w', down_time=0.05)).start()
                 self.sleep(1)
         if self.debug:
             self.screenshot(f'pick_echo_{highest_index}')
