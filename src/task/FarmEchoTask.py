@@ -68,6 +68,8 @@ class FarmEchoTask(BaseCombatTask):
             #     return
 
             self.wait_until(lambda: self.in_combat(), time_out=40, raise_if_not_found=True)
+            self.sleep(4)
+            self.wait_until(lambda: self.in_combat(), time_out=3, raise_if_not_found=True)
             self.load_chars()
             while self.in_combat():
                 try:
@@ -81,7 +83,7 @@ class FarmEchoTask(BaseCombatTask):
             logger.info(f'farm echo combat end')
             self.wait_in_team_and_world(time_out=20)
             logger.info(f'farm echo move forward walk_until_f to find echo')
-            if self.walk_until_f(time_out=4, raise_if_not_found=False):  # find and pick echo
+            if self.walk_until_f(time_out=3, raise_if_not_found=False):  # find and pick echo
                 logger.debug(f'farm echo found echo move forward walk_until_f to find echo')
                 self.incr_drop(True)
             elif not self.last_drop:  # only search for the guaranteed drop
@@ -93,7 +95,7 @@ class FarmEchoTask(BaseCombatTask):
             self.wait_click_feature('gray_confirm_exit_button', relative_x=-1, raise_if_not_found=True,
                                     use_gray_scale=True)
             self.wait_in_team_and_world(time_out=40)
-            self.sleep(2)
+            self.sleep(4)
 
     def incr_drop(self, dropped):
         if dropped:
