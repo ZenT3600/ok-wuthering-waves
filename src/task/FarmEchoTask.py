@@ -83,7 +83,8 @@ class FarmEchoTask(BaseCombatTask):
             logger.info(f'farm echo combat end')
             self.wait_in_team_and_world(time_out=20)
             logger.info(f'farm echo move forward walk_until_f to find echo')
-            if self.walk_until_f(time_out=3, raise_if_not_found=False):  # find and pick echo
+            if self.walk_until_f(time_out=3 if self.config.get('Entrance Direction') == 'Forward' else 6,
+                                 raise_if_not_found=False):  # find and pick echo
                 logger.debug(f'farm echo found echo move forward walk_until_f to find echo')
                 self.incr_drop(True)
             elif not self.last_drop:  # only search for the guaranteed drop
@@ -118,9 +119,9 @@ class FarmEchoTask(BaseCombatTask):
         # confirm_button = self.find_one('gray_confirm_exit_button', use_gray_scale=True, threshold=0.7)
 
         self.wait_click_feature('gray_confirm_exit_button', relative_x=-1, raise_if_not_found=False,
-                                use_gray_scale=True, time_out=2)
+                                use_gray_scale=True, time_out=3, click_after_delay=0.5)
         self.wait_click_feature('gray_start_battle', relative_x=-1, raise_if_not_found=True,
-                                use_gray_scale=True)
+                                use_gray_scale=True, click_after_delay=0.5)
 
     def find_echo_drop(self):
         # self.click_relative(0.5, 0.5)
